@@ -12,6 +12,7 @@ import com.innocode.blogapi.model.response.CommentResponse;
 import com.innocode.blogapi.repository.CommentRepository;
 import com.innocode.blogapi.repository.PostRepository;
 import com.innocode.blogapi.repository.UserRepository;
+import com.innocode.blogapi.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +33,7 @@ public class CommentService {
     private final UserRepository userRepository;
 
     public ApiResponse<Object> createComment(Long postId, CommentRequest commentReq) {
-        String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        String email = SecurityUtil.getAuthenticatedUserEmail();
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new UserNotFoundException(String.format("User with email '%s' not found", email)));
 
@@ -60,7 +61,7 @@ public class CommentService {
     }
 
     public ApiResponse<Object> updateComment(Long id, CommentRequest commentReq) {
-        String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        String email = SecurityUtil.getAuthenticatedUserEmail();
         Comment comment = commentRepository.findById(id).orElseThrow(() ->
                 new CommentNotFoundException(String.format("Comment with id '%s' not found", id)));
 
@@ -83,7 +84,7 @@ public class CommentService {
     }
 
     public ApiResponse<Object> deleteComment(Long id) {
-        String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        String email = SecurityUtil.getAuthenticatedUserEmail();
         Comment comment = commentRepository.findById(id).orElseThrow(() ->
                 new CommentNotFoundException(String.format("Comment with id '%s' not found", id)));
 
@@ -118,5 +119,4 @@ public class CommentService {
                 .data(commentResponses)
                 .build();
     }
-
 }

@@ -28,7 +28,7 @@ public class PostService {
     private final PostRepository postRepository;
 
     public ApiResponse<Object> createPost(PostRequest postReq) {
-        String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new UserNotFoundException(String.format("User with email '%s' not found", email)));
 
@@ -89,14 +89,13 @@ public class PostService {
     }
 
     public ApiResponse<Object> updatePost(Long id, PostRequest postReq) {
-        String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Post post = postRepository.findById(id).orElseThrow(() ->
                 new PostNotFoundException(String.format("Post with id '%s' not found", id)));
 
         if (!post.getAuthor().getEmail().equals(email)) {
             return new ApiResponse<>("FORBIDDEN", "You are not allowed to update this post", null);
         }
-
         post.setTitle(postReq.getTitle());
         post.setContent(postReq.getContent());
         post.setUpdatedAt(LocalDateTime.now());
@@ -121,7 +120,6 @@ public class PostService {
         if (!post.getAuthor().getEmail().equals(email)) {
             return new ApiResponse<>("FORBIDDEN", "You are not allowed to delete this post", null);
         }
-
         postRepository.delete(post);
         return new ApiResponse<>("SUCCESS", "Post deleted successfully", null);
     }

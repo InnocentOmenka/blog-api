@@ -4,6 +4,7 @@ import com.innocode.blogapi.model.response.ApiResponse;
 import com.innocode.blogapi.model.request.RegisterReq;
 import com.innocode.blogapi.model.entity.User;
 import com.innocode.blogapi.model.dto.UserLoginDto;
+import com.innocode.blogapi.model.response.LoginResponse;
 import com.innocode.blogapi.model.response.UserResponse;
 import com.innocode.blogapi.repository.UserRepository;
 import com.innocode.blogapi.security.JwtUtils;
@@ -11,6 +12,7 @@ import com.innocode.blogapi.security.UserDetailsServiceImpl;
 import com.innocode.blogapi.exception.BadCredentialsException;
 import com.innocode.blogapi.exception.UserAlreadyExistException;
 import com.innocode.blogapi.exception.UserNotFoundException;
+import com.innocode.blogapi.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -49,7 +51,7 @@ public class UserService {
         return new ApiResponse<>("success", "User created successfully", true);
     }
 
-    public ApiResponse<Object> loginUser(UserLoginDto loginDto) {
+    public ApiResponse<LoginResponse> loginUser(UserLoginDto loginDto) {
         String email = loginDto.getEmail();
         String password = loginDto.getPassword();
 
@@ -68,10 +70,15 @@ public class UserService {
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         String token = jwtUtil.generateToken(userDetails);
 
-        return new ApiResponse<>("success", "User logged in successfully", token);
+        LoginResponse response = LoginResponse.builder()
+                .id(user.getId())
+                .token(token)
+                .build();
+
+        return new ApiResponse<>("success", "User logged in successfully", response);
     }
     public ApiResponse<UserResponse> getUserProfile() {
-        String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        String email = SecurityUtil.getAuthenticatedUserEmail();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with email '%s' not found", email)));
 

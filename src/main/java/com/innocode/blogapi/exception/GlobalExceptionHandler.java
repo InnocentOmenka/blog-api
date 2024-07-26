@@ -38,4 +38,24 @@ public class GlobalExceptionHandler {
         errorResponse.setData(null);
         return errorResponse;
     }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<?> handleCommentNotFoundException(CommentNotFoundException exception) {
+        ApiResponse<?> errorResponse = new ApiResponse<>();
+        errorResponse.setStatus("FAILED");
+        errorResponse.setMessage(exception.getMessage());
+        errorResponse.setData(null);
+        return errorResponse;
+    }
+
+    @ExceptionHandler(PostNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<?> handlePostNotFoundException(PostNotFoundException exception) {
+        ApiResponse<?> errorResponse = new ApiResponse<>();
+        errorResponse.setStatus("FAILED");
+        errorResponse.setMessage(exception.getMessage());
+        errorResponse.setData(null);
+        return errorResponse;
+    }
 }
