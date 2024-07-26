@@ -36,12 +36,12 @@ git clone https://github.com/InnocentOmenka/blog-api.git
 cd blog-api
 
 Environment Variables
-Create a .env file in the root directory of the project and add the following environment variables:
 SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/blog-api_db
 SPRING_DATASOURCE_USERNAME=root
-SPRING_DATASOURCE_PASSWORD=mypassword
+SPRING_DATASOURCE_PASSWORD=mypassword(change to your own mysql password)
 SPRING_JPA_HIBERNATE_DDL_AUTO=update
-APP_SECURITY_JWT_SECRET_KEY=your_secret_key_here
+APP_SECURITY_JWT_SECRET_KEY=9367566B59703373367639792F423F4528482B4D6251655468576D5A71349435
+
 
 
 Build and Run the Application
@@ -50,9 +50,6 @@ Use Docker Compose to build and run the application:
 docker-compose up --build
 
 This will start two services: app and db. The app service runs the Spring Boot application, and the db service runs a MySQL database.
-
-Access the Application
-The API will be accessible at http://localhost:8080.
 
 API Documentation
 User Endpoints
