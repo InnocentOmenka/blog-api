@@ -6,22 +6,14 @@ import com.innocode.blogapi.exception.UserNotFoundException;
 import com.innocode.blogapi.model.dto.UserLoginDto;
 import com.innocode.blogapi.model.entity.User;
 import com.innocode.blogapi.model.request.RegisterReq;
-import com.innocode.blogapi.model.response.ApiResponse;
-import com.innocode.blogapi.model.response.LoginResponse;
 import com.innocode.blogapi.repository.UserRepository;
-import com.innocode.blogapi.security.JwtUtils;
-import com.innocode.blogapi.security.UserDetailsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,15 +27,6 @@ class AuthServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private JwtUtils jwtUtils;
-
-    @Mock
-    private AuthenticationManager authenticationManager;
-
-    @Mock
-    private UserDetailsServiceImpl userDetailsService;
 
     @InjectMocks
     private UserService userService;
@@ -63,9 +46,7 @@ class AuthServiceTest {
 
         when(userRepository.findByEmail(anyString())).thenReturn(java.util.Optional.of(new User()));
 
-        Exception exception = assertThrows(UserAlreadyExistException.class, () -> {
-            userService.registerUser(req);
-        });
+        Exception exception = assertThrows(UserAlreadyExistException.class, () -> userService.registerUser(req));
 
         assertEquals("Email already exists", exception.getMessage());
     }
@@ -78,9 +59,7 @@ class AuthServiceTest {
 
         when(userRepository.findByEmail(anyString())).thenReturn(java.util.Optional.empty());
 
-        Exception exception = assertThrows(UserNotFoundException.class, () -> {
-            userService.loginUser(loginDto);
-        });
+        Exception exception = assertThrows(UserNotFoundException.class, () -> userService.loginUser(loginDto));
 
         assertEquals("User with email 'test@example.com' not found", exception.getMessage());
     }
@@ -97,9 +76,7 @@ class AuthServiceTest {
         when(userRepository.findByEmail(anyString())).thenReturn(java.util.Optional.of(user));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
-        Exception exception = assertThrows(BadCredentialsException.class, () -> {
-            userService.loginUser(loginDto);
-        });
+        Exception exception = assertThrows(BadCredentialsException.class, () -> userService.loginUser(loginDto));
 
         assertEquals("Wrong Password", exception.getMessage());
     }
